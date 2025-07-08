@@ -1,0 +1,6 @@
+linters: with_defaults(
+  object_usage_linter = NULL,
+  undefined_global_linter = NULL
+)
+exclusions:
+  - "R/RcppExports.R" 
