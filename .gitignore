@@ -1,4 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+
+# R
+.Rproj.user
+.Rhistory
+.RData
+
+# OS
 .DS_Store
+
+# Temporary/cache files
 *.npy
 *.log
-input_processed_ids.txt
