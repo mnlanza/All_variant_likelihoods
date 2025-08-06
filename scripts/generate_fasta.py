@@ -4,19 +4,19 @@ from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 import itertools
 
-def _resolve_output_path(output_filename: str, same_dir_as_script: bool) -> str:
-    if same_dir_as_script:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_path = os.path.join(script_dir, output_filename)
-    else:
-        output_path = output_filename
-    # Make sure the folder exists
+def generate_fasta(seq: str, output_path: str, seq_id: str, description: str = ""):
+    """
+    Generate a single sequence FASTA file.
+    
+    Args:
+        seq: The sequence string
+        output_path: Full path where to save the FASTA file (e.g., "path/to/output/file.fasta")
+        seq_id: Identifier for the sequence
+        description: Optional description for the sequence
+    """
+    # Create output directory if it doesn't exist
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    return output_path
 
-
-def generate_fasta(seq: str, output_filename: str, seq_id: str, description: str = "", same_dir_as_script=True):
-    output_path = _resolve_output_path(output_filename, same_dir_as_script)
     record = SeqRecord(Seq(seq), id=seq_id, description=description)
     SeqIO.write(record, output_path, "fasta")
     print(f"FASTA written to {output_path}")
@@ -59,20 +59,20 @@ def generate_mult_fasta(seqs, output_path: str):
     ]
     """
 
-def generate_all_83_variants(seq: str, output_filename: str, codon_index: int = 83, same_dir_as_script=True):
+def generate_all_83_variants(seq: str, output_path: str, codon_index: int = 83):
     """
     Generate all possible codon variants at a specified position (default: 83) in the sequence.
     
     Args:
         seq: The reference sequence string
-        output_filename: Name of the output FASTA file
+        output_path: Full path where to save the FASTA file (e.g., "path/to/output/file.fasta")
         codon_index: The 1-based position of the codon to vary (default: 83)
-        same_dir_as_script: If True, save in same directory as script, else use absolute path
     
     Returns:
         None. Writes a FASTA file containing all 64 codon variants.
     """
-    output_path = _resolve_output_path(output_filename, same_dir_as_script)
+    # Create output directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     # Calculate codon position (0-based)
     start = (codon_index - 1) * 3

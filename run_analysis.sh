@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # Exit on error
-set -e
-
-# Print commands as they're executed
-set -x
+set -ex
 
 # Ensure directories exist
 mkdir -p output input/fasta input/logits

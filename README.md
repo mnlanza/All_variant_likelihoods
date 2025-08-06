@@ -10,6 +10,34 @@ This project analyzes the likelihood of different codon variants at position 83 
 - Visualizing the results through various plots
 - Validating reverse complement sequences
 
+## Processing Pipeline
+
+1. **Generate FASTA Files**:
+   ```bash
+   # First, generate forward strand variants
+   python scripts/generate_cods_83.py  # Creates codon83_variants.fasta
+   
+   # Then, generate reverse complements
+   python scripts/generate_r_cods_83.py  # Creates reverse_complements_83.fasta
+   ```
+
+2. **Run EVO Model**:
+   - Input: Both FASTA files (`codon83_variants.fasta` and `reverse_complements_83.fasta`)
+   - Output: Logits files in `input/logits/`
+     - Forward: `input_83_*_logits.npy`
+     - Reverse: `input_83_*_rc_logits.npy`
+
+3. **Analyze Results**:
+   ```bash
+   # Run analysis script
+   ./run_analysis.sh
+   ```
+   The script:
+   - Loads FASTA sequences and logits
+   - Calculates likelihoods
+   - Generates comparison plots
+   - Saves results to `output/`
+
 ## Directory Structure
 
 ```
@@ -29,10 +57,10 @@ This project analyzes the likelihood of different codon variants at position 83 
 │   ├── FR_comp_ls.pdf        # Forward vs reverse likelihood comparison (normalized forward vs reversed strand)
 │   └── FR_tot_lls.pdf        # Total log likelihoods comparison (forward vs reversed strand)
 ├── scripts/               # Helper scripts and utilities
-│   ├── generate_fasta.py           # FASTA generation utilities
-│   ├── 83_all_fx.R                # Core analysis functions
-│   ├── handle_EVO2_output.r        # Output handling utilities
-│   └── evo2_analysis_functions.R   # Analysis helper functions
+│   ├── analyze_FR_83.R           # Main analysis script
+│   ├── 83_all_fx.R              # Core analysis functions
+│   ├── handle_EVO2_output.r      # Output handling utilities
+│   └── evo2_analysis_functions.R # Analysis helper functions
 ├── tests/                # Validation and test scripts
 │   └── check_reverse_complements.py  # checks that sequences in fasta is the reverse complement of another inputted fasta
 └── requirements.txt      # Python dependencies
@@ -65,13 +93,13 @@ This will:
 
 ## Manual Usage
 
-### Main Analysis Script (main_FR_83_all.R)
+### Main Analysis Script (scripts/analyze_FR_83.R)
 
 Analyzes both forward and reverse complement sequences:
 
 ```bash
 # Basic usage
-Rscript main_FR_83_all.R \
+Rscript scripts/analyze_FR_83.R \
   --for_fasta input/fasta/codon83_variants.fasta \
   --rev_fasta input/fasta/reverse_complements_83.fasta \
   --for_raw_dir input/logits \
@@ -79,7 +107,7 @@ Rscript main_FR_83_all.R \
   --output_dir output
 
 # All options
-Rscript main_FR_83_all.R \
+Rscript scripts/analyze_FR_83.R \
   --for_fasta <forward_fasta>        # Forward strand FASTA file
   --rev_fasta <reverse_fasta>        # Reverse complement FASTA file
   --for_raw_dir <forward_raw_dir>    # Directory with forward logits
@@ -88,16 +116,6 @@ Rscript main_FR_83_all.R \
   --output_dir <output_dir>          # Output directory (default: output)
   --highlight <positions>            # Comma-separated positions to highlight
 ```
-
-### Generated Plots
-
-The script generates several plots in the output directory:
-- `Norm_codon_ls.pdf`: Normalized likelihoods per codon (forward)
-- `Rev_norm_codon_ls.pdf`: Normalized likelihoods per codon (reverse)
-- `Norm_aa_ls.pdf`: Normalized likelihoods per amino acid (forward)
-- `Rev_norm_aa_ls.pdf`: Normalized likelihoods per amino acid (reverse)
-- `FR_comp_ls.pdf`: Forward vs reverse comparison
-- `FR_tot_lls.pdf`: Total log likelihoods comparison
 
 ## Utility Scripts
 
