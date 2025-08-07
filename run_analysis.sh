@@ -7,7 +7,7 @@ set -ex
 mkdir -p output input/fasta input/logits
 
 # Run the forward/reverse analysis
-Rscript main_FR_83_all.R \
+Rscript scripts/main_FR_83_all.R \
   --for_fasta input/fasta/codon83_variants.fasta \
   --rev_fasta input/fasta/reverse_complements_83.fasta \
   --for_raw_dir input/logits \
