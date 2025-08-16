@@ -21,6 +21,12 @@ This project analyzes the likelihood of different codon variants at position 83 
    python scripts/generate_r_cods_83.py  # Creates reverse_complements_83.fasta
    ```
 
+   Note: The first script writes `codon83_variants.fasta` into the `scripts/` directory. Run the second script from the `scripts/` directory so it finds that file and writes `reverse_complements_83.fasta` there as well. Then move both files into `input/fasta/`:
+   ```bash
+   mv scripts/codon83_variants.fasta input/fasta/
+   mv scripts/reverse_complements_83.fasta input/fasta/
+   ```
+
 2. **Run EVO Model**:
    - Input: Both FASTA files (`codon83_variants.fasta` and `reverse_complements_83.fasta`)
    - Output: Logits files in `input/logits/`
@@ -47,8 +53,8 @@ This project analyzes the likelihood of different codon variants at position 83 
 │   │   ├── codon83_variants.fasta        # Forward strand variants
 │   │   └── reverse_complements_83.fasta  # Reverse complement variants
 │   └── logits/            # Neural network logits files
-│       ├── input_83_*.npy     # Forward strand logits
-│       └── input_83_*_rc.npy  # Reverse complement logits
+│       ├── input_83_*_logits.npy     # Forward strand logits
+│       └── input_83_*_rc_logits.npy  # Reverse complement logits
 ├── output/                # Generated files and results
 │   ├── Norm_codon_ls.pdf     # Normalized codon likelihoods (forward)
 │   ├── Norm_aa_ls.pdf        # Normalized amino acid likelihoods (forward)
@@ -57,9 +63,9 @@ This project analyzes the likelihood of different codon variants at position 83 
 │   ├── FR_comp_ls.pdf        # Forward vs reverse likelihood comparison (normalized forward vs reversed strand)
 │   └── FR_tot_lls.pdf        # Total log likelihoods comparison (forward vs reversed strand)
 ├── scripts/               # Helper scripts and utilities
-│   ├── analyze_FR_83.R           # Main analysis script
+│   ├── main_FR_83_all.R         # Main analysis script
 │   ├── 83_all_fx.R              # Core analysis functions
-│   ├── handle_EVO2_output.r      # Output handling utilities
+│   ├── handle_EVO2_output.r     # Output handling utilities
 │   └── evo2_analysis_functions.R # Analysis helper functions
 ├── tests/                # Validation and test scripts
 │   └── check_reverse_complements.py  # checks that sequences in fasta is the reverse complement of another inputted fasta
@@ -79,6 +85,11 @@ source venv/bin/activate  # On Unix/macOS
 pip install -r requirements.txt
 ```
 
+3. Install required R packages:
+```bash
+R -q -e "install.packages(c('Biostrings','ggplot2','optparse','ggrepel','reticulate'))"
+```
+
 ## Quick Start
 
 Run the complete analysis using the provided shell script:
@@ -93,13 +104,13 @@ This will:
 
 ## Manual Usage
 
-### Main Analysis Script (scripts/analyze_FR_83.R)
+### Main Analysis Script (scripts/main_FR_83_all.R)
 
 Analyzes both forward and reverse complement sequences:
 
 ```bash
 # Basic usage
-Rscript scripts/analyze_FR_83.R \
+Rscript scripts/main_FR_83_all.R \
   --for_fasta input/fasta/codon83_variants.fasta \
   --rev_fasta input/fasta/reverse_complements_83.fasta \
   --for_raw_dir input/logits \
@@ -107,7 +118,7 @@ Rscript scripts/analyze_FR_83.R \
   --output_dir output
 
 # All options
-Rscript scripts/analyze_FR_83.R \
+Rscript scripts/main_FR_83_all.R \
   --for_fasta <forward_fasta>        # Forward strand FASTA file
   --rev_fasta <reverse_fasta>        # Reverse complement FASTA file
   --for_raw_dir <forward_raw_dir>    # Directory with forward logits
@@ -128,10 +139,9 @@ from scripts.generate_fasta import generate_all_83_variants
 
 # Generate all possible codon variants at position 83
 generate_all_83_variants(
-    seq="ATGC...",                    # Reference sequence
-    output_filename="variants.fasta",  # Output file
-    codon_index=83,                   # Position to vary (1-based)
-    same_dir_as_script=False          # If True, save next to script
+    seq="ATGC...",                              # Reference sequence
+    output_path="input/fasta/codon83_variants.fasta",  # Output file path
+    codon_index=83                               # Position to vary (1-based)
 )
 ```
 
